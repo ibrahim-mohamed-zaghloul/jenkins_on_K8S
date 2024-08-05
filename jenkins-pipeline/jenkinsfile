@@ -3,18 +3,18 @@ pipeline {
         kubernetes {
             yaml '''
 apiVersion: v1
-    kind: Pod
-    metadata:
-        name: agent
-        namespace: jenkins-ns
-    spec:
-      serviceAccountName: jenkins-admin
-      containers:
-      - name: kaniko
-        image: gcr.io/kaniko-project/executor:latest
-        command:
-        - cat
-        tty: true
+kind: Pod
+metadata:
+    name: agent
+    namespace: jenkins-ns
+spec:
+    serviceAccountName: jenkins-admin
+    containers:
+    - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - cat
+    tty: true
 '''
         }
     }
