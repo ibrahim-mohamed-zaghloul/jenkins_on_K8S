@@ -2,6 +2,7 @@ pipeline {
     agent {
         kubernetes {
             yaml '''
+apiVersion: v1
 kind: Pod
 metadata:
     name: agent
@@ -17,10 +18,10 @@ spec:
       volumeMounts:
       - name: docker-secret
         mountPath: /kaniko/.docker/
-  volumes:
-    - name: docker-secret
-      secret:
-        secretName: docker-secret
+    volumes:
+        - name: docker-secret
+          secret:
+            secretName: docker-secret
 '''
         }
     }
