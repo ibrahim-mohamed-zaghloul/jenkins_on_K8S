@@ -1,0 +1,76 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+    kind: Pod
+    metadata:
+        name: agent
+        namespace: jenkins-ns
+    spec:
+      serviceAccountName: jenkins-admin
+      containers:
+      - name: kaniko
+        image: gcr.io/kaniko-project/executor:latest
+        command:
+        - cat
+        tty: true
+'''
+        }
+    }
+}
+//     environment {
+//         AWS_REGION = 'us-east-1'
+//         REPO_SERVER = "ibrahimmohamedzaghloul"
+//         REPO_NAME_FRONTEND = "${REPO_SERVER}/frontend"
+//         IMAGE_VERSION = "${BUILD_NUMBER}"
+//         CLUSTER_NAME = 'eks_cluster_one_tier_app'
+//         APP_NAMESPACE = "quiz-app-ns"
+//     }
+
+//     stages {
+
+//         stage("build image and push to dockerhub") {
+//             steps {
+//                 script {
+//                     echo "building and pushing docker images ..."
+//                     withCredentials([
+//                         usernamePassword(credentialsId: 'ecr-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')
+//                     ]){
+//                         sh "docker login -u ${USER} -p ${PASS} ${REPO_SERVER}"
+//                         sh "docker build ./quiz-app-frontend . -t ${REPO_NAME_FRONTEND}/${IMAGE_VERSION}"
+//                         sh "docker push ${REPO_NAME_FRONTEND}/${IMAGE_VERSION}"
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage("change image version") {
+//             steps {
+//                 script {
+//                     echo "changing image version .."
+//                     sh "sed -i \"s|image:.*|image: ${REPO_NAME_FRONTEND}/${IMAGE_VERSION}|g\" ./app-manifest/frontend.yaml"
+//                 }
+//             }
+//         }
+
+//         stage('Configure kubectl for EKS') {
+//             steps {
+//                 script {
+//                     sh "aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}"
+//                 }
+//             }
+
+//         stage('Deploy app to eks cluster') {
+//             steps {
+//                 echo 'Deploying to eks cluster ... '
+//                 withCredentials([file(credentialsId:'kube-config', variable:'KUBECONFIG')]){
+//                     script {
+//                         sh "kubectl create namespace ${APP_NAMESPACE} || true"
+//                         sh "kubectl apply -f ./app-manifest --namespace ${APP_NAMESPACE}"
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }

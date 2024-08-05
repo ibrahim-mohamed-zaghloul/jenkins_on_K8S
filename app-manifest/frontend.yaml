@@ -1,0 +1,38 @@
+#frontend deployment
+#frontend-service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: quiz-app-ns
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ibrahimmohamedzaghloul/frontend-js:lts
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: quiz-app-ns
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 8080
+      protocol: TCP
+  type: LoadBalancer
