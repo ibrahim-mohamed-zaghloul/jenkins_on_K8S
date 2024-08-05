@@ -11,10 +11,10 @@ spec:
     serviceAccountName: jenkins-admin
     containers:
     - name: kaniko
-    image: gcr.io/kaniko-project/executor:latest
-    command:
-    - cat
-    tty: true
+      image: gcr.io/kaniko-project/executor:latest
+      command:
+      - cat
+      tty: true
 '''
         }
     }
