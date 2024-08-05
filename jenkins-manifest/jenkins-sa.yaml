@@ -10,12 +10,10 @@ metadata:
 #role
 
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
-  name: jenkins
+  name: jenkins-role
   namespace: jenkins-ns
-  labels:
-    "app.kubernetes.io/name": 'jenkins'
 rules:
 - apiGroups: [""]
   resources: ["*"]
@@ -24,14 +22,14 @@ rules:
 ---
 #rolebinding
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
   name: jenkins-role-binding
   namespace: jenkins-ns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: jenkins
+  kind: ClusterRole
+  name: jenkins-role
 subjects:
 - kind: ServiceAccount
   name: jenkins-admin
