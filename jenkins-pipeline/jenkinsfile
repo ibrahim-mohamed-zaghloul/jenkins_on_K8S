@@ -15,31 +15,25 @@ spec:
       command:
       - cat
       tty: true
+      volumeMounts:
+      - name: docker-secret
+        mountPath: /kaniko/.docker/
+  volumes:
+    - name: docker-secret
+      secret:
+        secretName: docker-secret
 '''
         }
-    }
-    environment {
-        AWS_REGION = 'us-east-1'
-        REPO_SERVER = "ibrahimmohamedzaghloul"
-        REPO_NAME_FRONTEND = "${REPO_SERVER}/frontend"
-        IMAGE_VERSION = "${BUILD_NUMBER}"
-        CLUSTER_NAME = 'eks_cluster_one_tier_app'
-        APP_NAMESPACE = "quiz-app-ns"
     }
 
     stages {
 
-        stage("build image and push to dockerhub") {
+        stage('Build-Docker-Image') {
             steps {
-                script {
-                    echo "building and pushing docker images ..."
-                    // withCredentials([
-                    //     usernamePassword(credentialsId: 'ecr-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')
-                    // ]){
-                    //     sh "docker login -u ${USER} -p ${PASS} ${REPO_SERVER}"
-                    //     sh "docker build ./quiz-app-frontend . -t ${REPO_NAME_FRONTEND}/${IMAGE_VERSION}"
-                    //     sh "docker push ${REPO_NAME_FRONTEND}/${IMAGE_VERSION}"
-                    // }
+                container('kaniko') {
+                    script {
+                        sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
+                    }
                 }
             }
         }
