@@ -9,19 +9,31 @@ metadata:
     namespace: jenkins-ns
 spec:
     serviceAccountName: jenkins-admin
+
     containers:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:debug
       command:
       - cat
       tty: true
+
+    - name: aws-kubectl
+      image: abanobmorkos10/aws-kubectl
+      command:
+      - "/bin/bash"
+      - "-c"
+      - "sleep 99d"
+      tty: true
+
       volumeMounts:
       - name: docker-secret
         mountPath: /kaniko/.docker/
+
     volumes:
         - name: docker-secret
           secret:
             secretName: docker-secret
+
 '''
         }
     }
@@ -37,34 +49,21 @@ spec:
                 }
             }
         }
+        stage('deploy to eks') {
+            environment {
+                AWS_ACCESS_KEY_ID = credentials("aws_access_key_id")
+                AWS_SECRET_ACCESS_KEY = credentials("aws_secret_access_key")
+            }
+            steps {
+                container('aws-kubectl') {
+                    withCredentials([file(credentialsId: 'kube-config', variable: 'KUBECONFIG')]) {
+                        script {
+                            sh 'sed -i \"s|image:.*|image: ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}|g\" app-manifest/frontend.yaml'
+                            sh 'kubectl apply -f app-manifest'
+                        }
+                    }
+                }
+            }
+        }
     }
 }
-//         stage("change image version") {
-//             steps {
-//                 script {
-//                     echo "changing image version .."
-//                     sh "sed -i \"s|image:.*|image: ${REPO_NAME_FRONTEND}/${IMAGE_VERSION}|g\" ./app-manifest/frontend.yaml"
-//                 }
-//             }
-//         }
-
-//         stage('Configure kubectl for EKS') {
-//             steps {
-//                 script {
-//                     sh "aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}"
-//                 }
-//             }
-
-//         stage('Deploy app to eks cluster') {
-//             steps {
-//                 echo 'Deploying to eks cluster ... '
-//                 withCredentials([file(credentialsId:'kube-config', variable:'KUBECONFIG')]){
-//                     script {
-//                         sh "kubectl create namespace ${APP_NAMESPACE} || true"
-//                         sh "kubectl apply -f ./app-manifest --namespace ${APP_NAMESPACE}"
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
