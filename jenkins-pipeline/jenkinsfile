@@ -16,6 +16,9 @@ spec:
       command:
       - cat
       tty: true
+      volumeMounts:
+      - name: docker-secret
+        mountPath: /kaniko/.docker/
 
     - name: aws-kubectl
       image: abanobmorkos10/aws-kubectl
@@ -25,9 +28,7 @@ spec:
       - "sleep 99d"
       tty: true
 
-      volumeMounts:
-      - name: docker-secret
-        mountPath: /kaniko/.docker/
+
 
     volumes:
         - name: docker-secret
