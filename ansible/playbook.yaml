@@ -1,0 +1,38 @@
+- name: Deploy Jenkins in EKS
+  hosts: localhost
+  tasks:
+
+    - name: Create Jenkins namespace
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', '../jenkins-manifest/namespace.yaml') }}"
+
+    - name: Create Jenkins ServiceAccount
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', '../jenkins-manifest/jenkins-sa.yaml') }}"
+
+    - name: Create Jenkins ServiceAccount secret
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', '../jenkins-manifest/secret.yaml') }}"
+
+    - name: Create Jenkins volume
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', '../jenkins-manifest/jenkins-volume.yaml') }}"
+    
+    - name: Create Jenkins Deployment
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', '../jenkins-manifest/jenkins-deploy.yaml') }}"
+
+    - name: Create Jenkins Service
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', '../jenkins-manifest/jenkins-svc.yaml') }}"
+
+    - name: Create kaniko dockerhub secret
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', '../jenkins-manifest/kaniko-secret.yaml') }}"
