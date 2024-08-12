@@ -20,7 +20,7 @@ spec:
           mountPath: /kaniko/.docker/
 
     - name: git
-      image: alpine/git
+      image: ibrahimmohamedzaghloul/git
       command:
         - "/bin/bash"
         - "-c"
