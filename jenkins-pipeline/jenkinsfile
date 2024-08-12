@@ -5,61 +5,56 @@ pipeline {
 apiVersion: v1
 kind: Pod
 metadata:
-    name: agent
-    namespace: jenkins-ns
+  name: agent
+  namespace: jenkins-ns
 spec:
-    serviceAccountName: jenkins-admin
-
-    containers:
+  serviceAccountName: jenkins-admin
+  containers:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:debug
       command:
-      - cat
+        - cat
       tty: true
       volumeMounts:
-      - name: docker-secret
-        mountPath: /kaniko/.docker/
+        - name: docker-secret
+          mountPath: /kaniko/.docker/
 
     - name: aws-kubectl
       image: abanobmorkos10/aws-kubectl
       command:
-      - "/bin/bash"
-      - "-c"
-      - "sleep 99d"
+        - "/bin/bash"
+        - "-c"
+        - "sleep 99d"
       tty: true
 
-
-
-    volumes:
-        - name: docker-secret
-          secret:
-            secretName: docker-secret
-
+  volumes:
+    - name: docker-secret
+      secret:
+        secretName: docker-secret
 '''
         }
     }
 
     stages {
-
         stage('Build-Docker-Image') {
             steps {
                 container('kaniko') {
                     script {
-                        sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile  --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
+                        sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
                     }
                 }
             }
         }
-        stage('deploy to eks') {
+        stage('Deploy to EKS') {
             environment {
-                AWS_ACCESS_KEY_ID = credentials("aws_access_key_id")
-                AWS_SECRET_ACCESS_KEY = credentials("aws_secret_access_key")
+                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
             }
             steps {
                 container('aws-kubectl') {
                     withCredentials([file(credentialsId: 'kube-config', variable: 'KUBECONFIG')]) {
                         script {
-                            sh 'sed -i \"s|image:.*|image: ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}|g\" app-manifest/frontend.yaml'
+                            sh 'sed -i "s|image:.*|image: ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}|g" app-manifest/frontend.yaml'
                             sh 'kubectl apply -f app-manifest'
                         }
                     }
