@@ -51,6 +51,7 @@ spec:
                 container('git'){
                    withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh '''
+                        git init
                         git config user.email "ebrahemmohamedzaghloul@gmail.com"
                         git config user.name "ibrahimmohamedzaghloul"
                         git remote set-url origin https://${USER}:${PASS}@github.com/ibrahim-mohamed-zaghloul/jenkins_on_K8S.git
