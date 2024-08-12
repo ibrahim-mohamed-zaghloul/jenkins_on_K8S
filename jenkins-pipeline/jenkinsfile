@@ -53,7 +53,7 @@ spec:
                     sh '''
                         pwd
                         git init
-                        git config --global --add safe.directory /home/jenkins/agent/workspace/pwc
+                        git config --global --add safe.directory /home/jenkins/agent/workspace/pwc_multi_main
                         git config user.email "jenkins@gmail.com"
                         git config user.name "jenkins"
                         git remote set-url origin https://ibrahim-mohamed-zaghloul:${PASS}@github.com/ibrahim-mohamed-zaghloul/jenkins_on_K8S.git
