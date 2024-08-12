@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ibrahimmohamedzaghloul/pwc_quizapp:24
+          image: ibrahimmohamedzaghloul/pwc_quizapp:25
           ports:
             - containerPort: 8080
 ---
