@@ -49,7 +49,7 @@ spec:
         stage('Update repo') {
             steps {
                 container('git'){
-                   withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                   withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh '''
                         git config user.email "ebrahemmohamedzaghloul@gmail.com"
                         git config user.name "ibrahimmohamedzaghloul"
