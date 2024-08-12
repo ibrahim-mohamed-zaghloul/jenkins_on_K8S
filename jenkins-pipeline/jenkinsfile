@@ -40,7 +40,7 @@ spec:
             steps {
                 container('kaniko') {
                     script {
-                        sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
+                        // sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
                         sh 'sed -i "s|image:.*|image: ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}|g" app-manifest/frontend.yaml'
                     }
                 }
@@ -51,9 +51,11 @@ spec:
                 container('git'){
                    withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh '''
+                        pwd
                         git init
+                        git config --global --add safe.directory /home/jenkins/agent/workspace/pwc
                         git config user.email "ebrahemmohamedzaghloul@gmail.com"
-                        git config user.name "ibrahimmohamedzaghloul"
+                        git config user.name "ibrahim-mohamed-zaghloul"
                         git remote set-url origin https://${USER}:${PASS}@github.com/ibrahim-mohamed-zaghloul/jenkins_on_K8S.git
                         git add .
                         git commit -m "Update deployment image to version ${BUILD_NUMBER}"
