@@ -56,11 +56,11 @@ spec:
                         git config --global --add safe.directory /home/jenkins/agent/workspace/pwc
                         git config user.email "ebrahemmohamedzaghloul@gmail.com"
                         git config user.name "ibrahim-mohamed-zaghloul"
-                        git remote set-url origin https://${USER}:${PASS}@github.com/ibrahim-mohamed-zaghloul/jenkins_on_K8S.git
+                        git remote set-url origin https://ibrahim-mohamed-zaghloul:${PASS}@github.com/ibrahim-mohamed-zaghloul/jenkins_on_K8S.git
                         git add .
                         git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                         git push origin HEAD:main
-                        
+
                     '''
                 } 
               }
