@@ -40,7 +40,7 @@ spec:
             steps {
                 container('kaniko') {
                     script {
-                        // sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
+                        sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
                         sh 'sed -i "s|image:.*|image: ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}|g" app-manifest/frontend.yaml'
                     }
                 }
