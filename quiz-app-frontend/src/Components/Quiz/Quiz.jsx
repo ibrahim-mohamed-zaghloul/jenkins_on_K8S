@@ -104,7 +104,7 @@ const Quiz = () => {
   if (!startQuiz) {
     return (
       <div className="container">
-        <h1>Quiz App Ibrahim</h1>
+        <h1>Quiz App khalid</h1>
         <hr />
         <form onSubmit={handleSubmit}>
           <div>
