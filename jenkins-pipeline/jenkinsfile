@@ -19,8 +19,8 @@ spec:
         - name: docker-secret
           mountPath: /kaniko/.docker/
 
-    - name: aws-kubectl
-      image: abanobmorkos10/aws-kubectl
+    - name: git
+      image: alpine/git
       command:
         - "/bin/bash"
         - "-c"
@@ -41,25 +41,25 @@ spec:
                 container('kaniko') {
                     script {
                         sh '/kaniko/executor --dockerfile quiz-app-frontend/Dockerfile --context quiz-app-frontend --destination ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}'
+                        sh 'sed -i "s|image:.*|image: ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}|g" app-manifest/frontend.yaml'
                     }
                 }
             }
         }
-        stage('Deploy to EKS') {
-            environment {
-                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
-            }
+        stage('Update repo') {
             steps {
-                container('aws-kubectl') {
-                    withCredentials([file(credentialsId: 'kube-config', variable: 'KUBECONFIG')]) {
-                        script {
-                            sh 'sed -i "s|image:.*|image: ibrahimmohamedzaghloul/pwc_quizapp:${BUILD_NUMBER}|g" app-manifest/frontend.yaml'
-                            sh 'kubectl apply -f app-manifest'
-                            sh 'kubectl get svc -n quiz-app-ns'
-                        }
-                    }
-                }
+                container('git'){
+                   withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                        git config user.email "ebrahemmohamedzaghloul@gmail.com"
+                        git config user.name "ibrahimmohamedzaghloul"
+                        git remote set-url origin https://${USER}:${PASS}@github.com/ibrahim-mohamed-zaghloul/jenkins_on_K8S.git
+                        git add .
+                        git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                        git push origin HEAD:main
+                    '''
+                } 
+              }
             }
         }
     }
